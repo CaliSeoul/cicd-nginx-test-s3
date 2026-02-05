@@ -18,7 +18,7 @@ jobs:
 
       # 1. S3 배포 (index.html 파일)
       - name: S3 Deploy
-        run: aws s3 sync ./index.html s3://${{ secrets.S3_BUCKET_NAME }} --delete
+        run: aws s3 cp ./index.html s3://${{ secrets.S3_BUCKET_NAME }}/index.html
 
       # 2. ECR 빌드 & 푸시 (nginx-private 디렉토리)
       - name: ECR Login & Push
