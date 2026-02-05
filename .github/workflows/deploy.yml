@@ -16,15 +16,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-southeast-2
 
-      # 1. S3 배포
-      - name: S3 Deploy
-        run: aws s3 sync ./frontend s3://${{ secrets.S3_BUCKET_NAME }} --delete
-
-      # 2. ECR 빌드 & 푸시
-      - name: ECR Login & Push
-        run: |
-          aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin ${{ secrets.ECR_URI }}
-          docker build -t ${{ secrets.ECR_URI }}:latest ./backend
+          docker build -t ${{ secrets.ECR_URI }}:latest ./nginx-private
           docker push ${{ secrets.ECR_URI }}:latest
 
       # 3. SSM 명령 전송 (EC2 배포)
