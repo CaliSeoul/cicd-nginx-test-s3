@@ -24,8 +24,8 @@ jobs:
       - name: ECR Login & Push
         run: |
           aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin ${{ secrets.ECR_URI }}
-          docker build -t ${{ secrets.ECR_URI }}:latest ./nginx-private
-          docker push ${{ secrets.ECR_URI }}:latest
+          docker build -t ${{ secrets.ECR_URI }}:${{ github.sha }} ./nginx-private
+          docker push ${{ secrets.ECR_URI }}:${{ github.sha }}
 
       # 3. SSM 명령 전송 (EC2 배포)
       - name: SSM Deploy
@@ -35,7 +35,7 @@ jobs:
             --document-name "AWS-RunShellScript" \
             --parameters "commands=[
               'aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin ${{ secrets.ECR_URI }}',
-              'docker pull ${{ secrets.ECR_URI }}:latest',
+              'docker pull ${{ secrets.ECR_URI }}:${{ github.sha }}',
               'docker stop app || true && docker rm app || true',
-              'docker run -d --name app -p 80:80 ${{ secrets.ECR_URI }}:latest'
+              'docker run -d --name app -p 80:80 ${{ secrets.ECR_URI }}:${{ github.sha }}'
             ]"
